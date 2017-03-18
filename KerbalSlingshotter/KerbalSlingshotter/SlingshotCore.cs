@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using UnityEngine;
 using Debug = UnityEngine.Debug;
+using KSP.IO;
+using KSP.UI.Screens;
 
 namespace KerbalSlingshotter
 {
@@ -27,15 +30,20 @@ namespace KerbalSlingshotter
         bool WindowVisible = false;
         uint years = 0, days = 0, hours = 0, minutes = 0, seconds = 0;
 
-        void Start()
+        public void Start()
         {
-            DesiredTime = UT;
-            ShipIcon = GameDatabase.Instance.GetTexture("Squad/PartList/SimpleIcons/RDicon_commandmodules", false);
-            BodyIcon = GameDatabase.Instance.GetTexture("SlingShotter/Textures/body", false);
-            RenderingManager.AddToPostDrawQueue(3, new Callback(drawGUI));//start the GUI
+           /* DesiredTime = UT; */
             if (HighLogic.LoadedScene == GameScenes.TRACKSTATION || HighLogic.LoadedScene == GameScenes.FLIGHT)
                 CreateButtonIcon();
         }
+
+        private void OnGUI()
+        {
+            ShipIcon = GameDatabase.Instance.GetTexture("Squad/PartList/SimpleIcons/RDicon_commandmodules", false);
+            BodyIcon = GameDatabase.Instance.GetTexture("SlingShotter/Textures/body", false);
+            drawGUI(); 
+        }
+
         void OnDestroy()
         {
             ApplicationLauncher.Instance.RemoveModApplication(button);
@@ -53,10 +61,11 @@ namespace KerbalSlingshotter
             }
             else if (HighLogic.LoadedScene == GameScenes.TRACKSTATION)
             {
+
                 SpaceTracking st = (SpaceTracking)FindObjectOfType(typeof(SpaceTracking));
-                if (st.mainCamera.target != null && st.mainCamera.target.type == MapObject.MapObjectType.VESSEL)
+                if (st.MainCamera.target != null && st.MainCamera.target.type == MapObject.ObjectType.Vessel)
                 {
-                    return st.mainCamera.target.vessel;
+                    return st.MainCamera.target.vessel;
                 }
                 else
                 {
@@ -79,6 +88,7 @@ namespace KerbalSlingshotter
 
         private void WindowGUI(int windowID)
         {
+
             GUIStyle mySty = new GUIStyle(GUI.skin.button);
             mySty.normal.textColor = mySty.focused.textColor = Color.white;
             mySty.hover.textColor = mySty.active.textColor = Color.yellow;
@@ -109,20 +119,24 @@ namespace KerbalSlingshotter
                 GUI.changed = false;
             }
             GUILayout.EndVertical();
+
             DesiredTime = UT + years * DaysPerYear * HoursPerDay * 3600.0 + 
                 days * HoursPerDay * 3600.0 + 
                 hours * 3600.0 +
                 minutes * 60.0 + seconds;
+
             GUI.DragWindow(new Rect(0, 0, 10000, 20));
         }
+
         private void drawGUI()
         {
             if (WindowVisible)
             {
-                if (HighLogic.LoadedScene == GameScenes.TRACKSTATION || HighLogic.LoadedScene == GameScenes.FLIGHT)
-                    DrawIconForAllOrbits();
                 GUI.skin = HighLogic.Skin;
                 windowPos = GUILayout.Window(1, windowPos, WindowGUI, "SlingShotter | Set Time", GUILayout.MinWidth(300));
+                if (HighLogic.LoadedScene == GameScenes.TRACKSTATION || HighLogic.LoadedScene == GameScenes.FLIGHT)
+                    DrawIconForAllOrbits();
+
             }
         }
 
@@ -150,12 +164,14 @@ namespace KerbalSlingshotter
 
         void DrawBodyOrbits()
         {
-            foreach (CelestialBody body in FlightGlobals.Bodies)
+           foreach (CelestialBody body in FlightGlobals.Bodies)
             {
 
                 if (body != null && body.orbit != null)
                 {
+
                     DrawIcon(body.getPositionAtUT(DesiredTime), BodyIcon);
+
                 }
             }
         }
@@ -177,7 +193,8 @@ namespace KerbalSlingshotter
             styleWarpToButton.fixedHeight = 32;
             styleWarpToButton.normal.background = icon;
 
-            Vector3d screenPosNode = MapView.MapCamera.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(position));
+            Vector3d screenPosNode = PlanetariumCamera.Camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(position));
+
             Rect rectNodeButton = new Rect((Int32)screenPosNode.x-16, (Int32)(Screen.height - screenPosNode.y)-16, 32, 32);
             GUI.Button(rectNodeButton, "", styleWarpToButton);
         }
