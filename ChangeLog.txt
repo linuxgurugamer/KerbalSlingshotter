@@ -1,0 +1,7 @@
+1.0.1	updated by @Hacki for 1.2.2
+
+1.1		Adoption by Linuxgurugmaer
+		Added list of all maneuver nodes
+		Added slider to adjust time between 1st and last maneuver node
+		Fixed dragging so it can be dragged from anywhere
+		Added code to write version into into assembly

@@ -13,22 +13,29 @@ namespace KerbalSlingshotter
 {
     [KSPAddon(KSPAddon.Startup.Flight,false)]
     public class FlightSlingshot : SlingshotCore { }
+
     [KSPAddon(KSPAddon.Startup.TrackingStation,false)]
     public class TrackingSlingshot : SlingshotCore { }
 
+    public class TimeInfo
+    {
+        public uint years = 0, days = 0, hours = 0, minutes = 0, seconds = 0;
+    }
     public class SlingshotCore : MonoBehaviour
     {
         internal static Texture2D ShipIcon = null;
         internal static Texture2D BodyIcon = null;
         private static Vessel vessel { get { return CurrentVessel(); } }
-        protected Rect windowPos = new Rect(50, 100, 300, 200);
+        protected Rect windowPos = new Rect(50, 100, 300, 400);
         double DesiredTime;
+        TimeInfo desiredTimeInfo = new TimeInfo();
+        private static Vessel lastVessel = null;
         public static int HoursPerDay { get { return GameSettings.KERBIN_TIME ? 6 : 24; } }
         public static int DaysPerYear { get { return GameSettings.KERBIN_TIME ? 426 : 365; } }
         private static double UT { get { return Planetarium.GetUniversalTime(); } }
         ApplicationLauncherButton button;
         bool WindowVisible = false;
-        uint years = 0, days = 0, hours = 0, minutes = 0, seconds = 0;
+       // uint years = 0, days = 0, hours = 0, minutes = 0, seconds = 0;
 
         public void Start()
         {
@@ -51,6 +58,29 @@ namespace KerbalSlingshotter
 
         void FixedUpdate()
         {
+            // Following needed to adjust values for slider, which can only use float
+            // Only do it 1/sec to avoid any unnecessary cpu
+            if (Planetarium.GetUniversalTime() > lastTime)
+            {
+                lastTime = Planetarium.GetUniversalTime() + 1;
+
+                div = 1;
+                while (vessel.patchedConicSolver.maneuverNodes.First().UT / div > float.MaxValue ||
+                    vessel.patchedConicSolver.maneuverNodes.Last().UT / div > float.MaxValue)
+                    div++;
+
+                sliderBeginTime = (float)vessel.patchedConicSolver.maneuverNodes.First().UT / div;
+                sliderEndtime = (float)vessel.patchedConicSolver.maneuverNodes.Last().UT / div;
+                if (timeSel < sliderBeginTime)
+                    timeSel = sliderBeginTime;
+                if (timeSel > sliderEndtime)
+                    timeSel = sliderEndtime;
+            }
+            if (lastVessel != vessel)
+            {
+                desiredTimeInfo = setTimeSelection(vessel.patchedConicSolver.maneuverNodes.First().UT);
+                lastVessel = vessel;
+            }
         }
 
         static Vessel CurrentVessel()
@@ -76,56 +106,125 @@ namespace KerbalSlingshotter
         }
 
 
-        void setTimeSelection(double selection)
+        TimeInfo setTimeSelection(double selection)
         {
+            TimeInfo t = new TimeInfo();
             selection -= UT;
-            years = (uint)(selection / DaysPerYear / HoursPerDay / 3600);
-            days = (uint)((selection / HoursPerDay / 3600) % DaysPerYear);
-            hours = (uint)((selection / 3600) % HoursPerDay);
-            minutes = (uint)((selection / 60) % 60);
-            seconds = (uint)(selection % 60);
+            t.years = (uint)(selection / DaysPerYear / HoursPerDay / 3600);
+            t.days = (uint)((selection / HoursPerDay / 3600) % DaysPerYear);
+            t.hours = (uint)((selection / 3600) % HoursPerDay);
+            t.minutes = (uint)((selection / 60) % 60);
+            t.seconds = (uint)(selection % 60);
+            return t;
         }
+
+        Vector2 scrollVector;
+        float sliderBeginTime, sliderEndtime;
+        float timeSel = 0;
+        int div = 1;
+        double lastTime = 0;
 
         private void WindowGUI(int windowID)
         {
-
+            GUIStyle textFieldLabel = new GUIStyle(GUI.skin.textField);
             GUIStyle mySty = new GUIStyle(GUI.skin.button);
             mySty.normal.textColor = mySty.focused.textColor = Color.white;
             mySty.hover.textColor = mySty.active.textColor = Color.yellow;
             mySty.onNormal.textColor = mySty.onFocused.textColor = mySty.onHover.textColor = mySty.onActive.textColor = Color.green;
             mySty.padding = new RectOffset(8, 8, 8, 8);
             GUILayout.BeginVertical();
+           
+
+            GUIStyle MyScrollView = new GUIStyle(HighLogic.Skin.scrollView);
+            var scrollbar_stlye = new GUIStyle(MyScrollView);
+            scrollbar_stlye.padding = new RectOffset(3, 3, 3, 3);
+            scrollbar_stlye.border = new RectOffset(3, 3, 3, 3);
+            scrollbar_stlye.margin = new RectOffset(1, 1, 1, 1);
+            scrollbar_stlye.overflow = new RectOffset(1, 1, 1, 1);
+
+            
+
+            if (vessel.patchedConicSolver.maneuverNodes.Any())
+            {
+                GUILayout.BeginHorizontal();
+                
+                GUILayout.Space(5);
+                scrollVector = GUILayout.BeginScrollView(scrollVector, scrollbar_stlye); //, GUILayout.Width(266), GUILayout.Height(225));
+                foreach (var t1 in vessel.patchedConicSolver.maneuverNodes)
+                {
+                    TimeInfo t = setTimeSelection(t1.UT);
+
+                    GUILayout.BeginHorizontal();
+                    string l = t.years.ToString() + "y, " +
+                        t.days.ToString() + "d, " +
+                        t.hours.ToString() + "h, " +
+                        t.minutes.ToString() + "m, " +
+                        t.seconds.ToString() + "s";
+                    if (GUILayout.Button(l))
+                    {
+                        desiredTimeInfo = setTimeSelection(t1.UT);
+                        timeSel = (float)t1.UT / div;
+                    }
+#if false
+                    GUILayout.Label("y", GUILayout.ExpandWidth(false));
+                    GUILayout.Label(t.years.ToString(), textFieldLabel, GUILayout.Width(40));
+                    GUILayout.Label("d", GUILayout.ExpandWidth(false));
+                    GUILayout.TextField(t.days.ToString(), textFieldLabel, GUILayout.Width(40));
+                    GUILayout.Label("h", GUILayout.ExpandWidth(false));
+                    GUILayout.TextField(t.hours.ToString(), textFieldLabel, GUILayout.Width(40));
+                    GUILayout.Label("m", GUILayout.ExpandWidth(false));
+                    GUILayout.TextField(t.minutes.ToString(), textFieldLabel, GUILayout.Width(40));
+                    GUILayout.Label("s", GUILayout.ExpandWidth(false));
+                    GUILayout.TextField(t.seconds.ToString(), textFieldLabel, GUILayout.Width(40));
+#endif
+                    GUILayout.EndHorizontal();
+                }
+                GUILayout.EndScrollView();
+                GUILayout.EndHorizontal();
+            }
+            // need to add 0.25 here to deal with floating point roundoff.
+           // setTimeSelection(DesiredTime + 0.25);
             GUILayout.Label("Desired Time:", GUILayout.ExpandWidth(true));
             GUILayout.BeginHorizontal();
             GUILayout.Label("y", GUILayout.ExpandWidth(false));
-            years = uint.Parse(GUILayout.TextField(years.ToString(), GUILayout.Width(40)));
+            desiredTimeInfo.years = uint.Parse(GUILayout.TextField(desiredTimeInfo.years.ToString(), GUILayout.Width(40)));
             GUILayout.Label("d", GUILayout.ExpandWidth(false));
-            days = uint.Parse(GUILayout.TextField(days.ToString(), GUILayout.Width(40)));
+            desiredTimeInfo.days = uint.Parse(GUILayout.TextField(desiredTimeInfo.days.ToString(), GUILayout.Width(40)));
             GUILayout.Label("h", GUILayout.ExpandWidth(false));
-            hours = uint.Parse(GUILayout.TextField(hours.ToString(), GUILayout.Width(40)));
+            desiredTimeInfo.hours = uint.Parse(GUILayout.TextField(desiredTimeInfo.hours.ToString(), GUILayout.Width(40)));
             GUILayout.Label("m", GUILayout.ExpandWidth(false));
-            minutes = uint.Parse(GUILayout.TextField(minutes.ToString(), GUILayout.Width(40)));
+            desiredTimeInfo.minutes = uint.Parse(GUILayout.TextField(desiredTimeInfo.minutes.ToString(), GUILayout.Width(40)));
             GUILayout.Label("s", GUILayout.ExpandWidth(false));
-            seconds = uint.Parse(GUILayout.TextField(seconds.ToString(), GUILayout.Width(40)));
+            desiredTimeInfo.seconds = uint.Parse(GUILayout.TextField(desiredTimeInfo.seconds.ToString(), GUILayout.Width(40)));
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            var newTimeSel = GUILayout.HorizontalSlider(timeSel, sliderBeginTime, sliderEndtime);
+            if (newTimeSel != timeSel)
+            {
+                desiredTimeInfo = setTimeSelection(newTimeSel * div);
+                timeSel = newTimeSel;
+            }
             GUILayout.EndHorizontal();
             if (GUILayout.Button("Next Node") && vessel.patchedConicSolver.maneuverNodes.Any())
             {
-                setTimeSelection(vessel.patchedConicSolver.maneuverNodes.First().UT);
+                desiredTimeInfo = setTimeSelection(vessel.patchedConicSolver.maneuverNodes.First().UT);
                 GUI.changed = false;
+                timeSel = (float)vessel.patchedConicSolver.maneuverNodes.First().UT / div;
             }
             if (GUILayout.Button("Last Node") && vessel.patchedConicSolver.maneuverNodes.Any())
             {
-                setTimeSelection(vessel.patchedConicSolver.maneuverNodes.Last().UT);
+                desiredTimeInfo = setTimeSelection(vessel.patchedConicSolver.maneuverNodes.Last().UT);
                 GUI.changed = false;
+                timeSel = (float)vessel.patchedConicSolver.maneuverNodes.Last().UT / div;
             }
             GUILayout.EndVertical();
 
-            DesiredTime = UT + years * DaysPerYear * HoursPerDay * 3600.0 + 
-                days * HoursPerDay * 3600.0 + 
-                hours * 3600.0 +
-                minutes * 60.0 + seconds;
+            DesiredTime = UT + desiredTimeInfo.years * DaysPerYear * HoursPerDay * 3600.0 +
+                desiredTimeInfo.days * HoursPerDay * 3600.0 +
+                desiredTimeInfo.hours * 3600.0 +
+                desiredTimeInfo.minutes * 60.0 + desiredTimeInfo.seconds;
 
-            GUI.DragWindow(new Rect(0, 0, 10000, 20));
+            GUI.DragWindow();
         }
 
         private void drawGUI()
@@ -208,7 +307,7 @@ namespace KerbalSlingshotter
                 null,
                 null,
                 null,
-                ApplicationLauncher.AppScenes.ALWAYS,
+                ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.MAPVIEW | ApplicationLauncher.AppScenes.TRACKSTATION,
                 GameDatabase.Instance.GetTexture("SlingShotter/Textures/icon", false)
                 );
         }
