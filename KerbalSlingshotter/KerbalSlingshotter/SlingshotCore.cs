@@ -63,22 +63,25 @@ namespace KerbalSlingshotter
             if (Planetarium.GetUniversalTime() > lastTime)
             {
                 lastTime = Planetarium.GetUniversalTime() + 1;
+                if (vessel != null && vessel.patchedConicSolver.maneuverNodes.Count > 1)
+                {
+                    div = 1;
+                    while (vessel.patchedConicSolver.maneuverNodes.First().UT / div > float.MaxValue ||
+                        vessel.patchedConicSolver.maneuverNodes.Last().UT / div > float.MaxValue)
+                        div++;
 
-                div = 1;
-                while (vessel.patchedConicSolver.maneuverNodes.First().UT / div > float.MaxValue ||
-                    vessel.patchedConicSolver.maneuverNodes.Last().UT / div > float.MaxValue)
-                    div++;
-
-                sliderBeginTime = (float)vessel.patchedConicSolver.maneuverNodes.First().UT / div;
-                sliderEndtime = (float)vessel.patchedConicSolver.maneuverNodes.Last().UT / div;
-                if (timeSel < sliderBeginTime)
-                    timeSel = sliderBeginTime;
-                if (timeSel > sliderEndtime)
-                    timeSel = sliderEndtime;
+                    sliderBeginTime = (float)vessel.patchedConicSolver.maneuverNodes.First().UT / div;
+                    sliderEndtime = (float)vessel.patchedConicSolver.maneuverNodes.Last().UT / div;
+                    if (timeSel < sliderBeginTime)
+                        timeSel = sliderBeginTime;
+                    if (timeSel > sliderEndtime)
+                        timeSel = sliderEndtime;
+                }
             }
-            if (lastVessel != vessel)
+            if (vessel != null && lastVessel != vessel)
             {
-                desiredTimeInfo = setTimeSelection(vessel.patchedConicSolver.maneuverNodes.First().UT);
+                if (vessel.patchedConicSolver.maneuverNodes.Count > 0)
+                    desiredTimeInfo = setTimeSelection(vessel.patchedConicSolver.maneuverNodes.First().UT);
                 lastVessel = vessel;
             }
         }

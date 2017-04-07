@@ -5,3 +5,5 @@
 		Added slider to adjust time between 1st and last maneuver node
 		Fixed dragging so it can be dragged from anywhere
 		Added code to write version into into assembly
+1.1.0.1
+		Fixed nullref at vessel launch
