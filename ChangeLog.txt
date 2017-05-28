@@ -7,3 +7,6 @@
 		Added code to write version into into assembly
 1.1.0.1
 		Fixed nullref at vessel launch
+
+1.1.1
+		Updated for 1.3
