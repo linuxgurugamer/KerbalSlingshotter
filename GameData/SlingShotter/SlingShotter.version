@@ -1,10 +1,10 @@
 {
   "NAME": "KerbalSlingShotter",
-  "URL": "http://ksp-avc.cybutek.net/version.php?id=462",
+  "URL": "https://raw.githubusercontent.com/linuxgurugamer/KerbalSlingshotter/master/GameData/SlingShotter/SlingShotter.version",
   "VERSION": {
     "MAJOR": 1,
     "MINOR": 1,
-    "PATCH": 1,
+    "PATCH": 2,
     "BUILD": 0
   },
   "KSP_VERSION": {

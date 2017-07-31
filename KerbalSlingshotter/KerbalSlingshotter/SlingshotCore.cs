@@ -42,13 +42,21 @@ namespace KerbalSlingshotter
            /* DesiredTime = UT; */
             if (HighLogic.LoadedScene == GameScenes.TRACKSTATION || HighLogic.LoadedScene == GameScenes.FLIGHT)
                 CreateButtonIcon();
+            if (ShipIcon == null)
+                ShipIcon = GameDatabase.Instance.GetTexture("Squad/PartList/SimpleIcons/RDicon_commandmodules", false);
+            if (BodyIcon == null)
+                BodyIcon = GameDatabase.Instance.GetTexture("SlingShotter/Textures/body", false);
         }
 
         private void OnGUI()
         {
-            ShipIcon = GameDatabase.Instance.GetTexture("Squad/PartList/SimpleIcons/RDicon_commandmodules", false);
-            BodyIcon = GameDatabase.Instance.GetTexture("SlingShotter/Textures/body", false);
-            drawGUI(); 
+            if (WindowVisible)
+            {
+                GUI.skin = HighLogic.Skin;
+                windowPos = GUILayout.Window(1, windowPos, WindowGUI, "SlingShotter | Set Time", GUILayout.MinWidth(300));
+                if (HighLogic.LoadedScene == GameScenes.TRACKSTATION || HighLogic.LoadedScene == GameScenes.FLIGHT)
+                    DrawIconForAllOrbits();
+            }
         }
 
         void OnDestroy()
@@ -232,14 +240,10 @@ namespace KerbalSlingshotter
 
         private void drawGUI()
         {
-            if (WindowVisible)
-            {
-                GUI.skin = HighLogic.Skin;
-                windowPos = GUILayout.Window(1, windowPos, WindowGUI, "SlingShotter | Set Time", GUILayout.MinWidth(300));
-                if (HighLogic.LoadedScene == GameScenes.TRACKSTATION || HighLogic.LoadedScene == GameScenes.FLIGHT)
-                    DrawIconForAllOrbits();
+           
 
-            }
+
+            
         }
 
         void DrawPatchIcons(Orbit o)
