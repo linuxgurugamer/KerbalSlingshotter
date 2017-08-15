@@ -29,6 +29,8 @@ namespace KerbalSlingshotter
         protected Rect windowPos = new Rect(50, 100, 300, 400);
         double DesiredTime;
         TimeInfo desiredTimeInfo = new TimeInfo();
+        TimeInfo endTimeInfo = null;
+        bool startTimeNow = false;
         private static Vessel lastVessel = null;
         public static int HoursPerDay { get { return GameSettings.KERBIN_TIME ? 6 : 24; } }
         public static int DaysPerYear { get { return GameSettings.KERBIN_TIME ? 426 : 365; } }
@@ -78,8 +80,25 @@ namespace KerbalSlingshotter
                         vessel.patchedConicSolver.maneuverNodes.Last().UT / div > float.MaxValue)
                         div++;
 
-                    sliderBeginTime = (float)vessel.patchedConicSolver.maneuverNodes.First().UT / div;
-                    sliderEndtime = (float)vessel.patchedConicSolver.maneuverNodes.Last().UT / div;
+                    if (startTimeNow)
+                        sliderBeginTime = (float)Planetarium.GetUniversalTime() + 60;
+                    else
+                        sliderBeginTime = (float)vessel.patchedConicSolver.maneuverNodes.First().UT / div;
+
+                    if (endTimeInfo == null)
+                    {
+                        sliderEndtime = (float)vessel.patchedConicSolver.maneuverNodes.Last().UT / div;
+                        var a = setTimeSelection(sliderEndtime / div);                    
+                    }
+                    else
+                    {
+                        sliderEndtime = (endTimeInfo.years * DaysPerYear * HoursPerDay * 3600 +
+                            endTimeInfo.days * HoursPerDay * 3600 +
+                            endTimeInfo.hours * 3600 +
+                            endTimeInfo.minutes * 60 +
+                            endTimeInfo.seconds + (float)Planetarium.GetUniversalTime()) / div;
+                    }
+                    
                     if (timeSel < sliderBeginTime)
                         timeSel = sliderBeginTime;
                     if (timeSel > sliderEndtime)
@@ -174,6 +193,7 @@ namespace KerbalSlingshotter
                     if (GUILayout.Button(l))
                     {
                         desiredTimeInfo = setTimeSelection(t1.UT);
+                        startTimeNow = false;
                         timeSel = (float)t1.UT / div;
                     }
 #if false
@@ -193,8 +213,10 @@ namespace KerbalSlingshotter
                 GUILayout.EndScrollView();
                 GUILayout.EndHorizontal();
             }
+           
+
             // need to add 0.25 here to deal with floating point roundoff.
-           // setTimeSelection(DesiredTime + 0.25);
+            // setTimeSelection(DesiredTime + 0.25);
             GUILayout.Label("Desired Time:", GUILayout.ExpandWidth(true));
             GUILayout.BeginHorizontal();
             GUILayout.Label("y", GUILayout.ExpandWidth(false));
@@ -216,18 +238,39 @@ namespace KerbalSlingshotter
                 timeSel = newTimeSel;
             }
             GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Start Time Now"))
+            {
+                startTimeNow = true;
+            }
+            
+            if (GUILayout.Button(endTimeInfo == null? "Set End Time":"Unset End Time") && vessel.patchedConicSolver.maneuverNodes.Any())
+            {
+                if (endTimeInfo == null)
+                {
+                    endTimeInfo = desiredTimeInfo;
+                }
+                else
+                    endTimeInfo = null;
+            }
+            GUILayout.EndHorizontal();
             if (GUILayout.Button("Next Node") && vessel.patchedConicSolver.maneuverNodes.Any())
             {
+                startTimeNow = false;
+                endTimeInfo = null;
                 desiredTimeInfo = setTimeSelection(vessel.patchedConicSolver.maneuverNodes.First().UT);
                 GUI.changed = false;
                 timeSel = (float)vessel.patchedConicSolver.maneuverNodes.First().UT / div;
             }
             if (GUILayout.Button("Last Node") && vessel.patchedConicSolver.maneuverNodes.Any())
             {
+                startTimeNow = false;
+                endTimeInfo = null;
                 desiredTimeInfo = setTimeSelection(vessel.patchedConicSolver.maneuverNodes.Last().UT);
                 GUI.changed = false;
                 timeSel = (float)vessel.patchedConicSolver.maneuverNodes.Last().UT / div;
             }
+
             GUILayout.EndVertical();
 
             DesiredTime = UT + desiredTimeInfo.years * DaysPerYear * HoursPerDay * 3600.0 +
