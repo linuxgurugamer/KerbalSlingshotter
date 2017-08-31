@@ -351,7 +351,10 @@ namespace KerbalSlingshotter
         private void CreateButtonIcon()
         {
             button = ApplicationLauncher.Instance.AddModApplication(
-                () => WindowVisible = true,
+                () =>
+                {
+                    if (vessel != null) WindowVisible = true;
+                },
                 () => WindowVisible = false,
                 null,
                 null,
