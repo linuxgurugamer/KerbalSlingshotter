@@ -1,7 +1,5 @@
 
 @echo off
-set H=R:\KSP_1.3.0_dev
-echo %H%
 
 copy KerbalSlingshotter\KerbalSlingshotter\bin\Release\KerbalSlingshotter.dll GameData\SlingShotter\Plugins
 
