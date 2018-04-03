@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFolder", "SolutionF
 		deploy.bat = deploy.bat
 		LICENSE.txt = LICENSE.txt
 		README.md = README.md
-		GameData\SlingShotter\SlingShotter.version = GameData\SlingShotter\SlingShotter.version
+		SlingShotter.version = SlingShotter.version
 	EndProjectSection
 EndProject
 Global
