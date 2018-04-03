@@ -28,7 +28,7 @@
 	string s;
 
 
-	string versionfile =   @"D:\Users\jbb\github\KerbalSlingshotter\GameData\SlingShotter\SlingShotter.version";
+	string versionfile =   @"D:\Users\jbb\github\KerbalSlingshotter\SlingShotter.version";
 
 	if (!File.Exists(versionfile))
 	{

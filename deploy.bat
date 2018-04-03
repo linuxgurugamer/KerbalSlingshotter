@@ -1,8 +1,20 @@
 
-set H=R:\KSP_1.3.1_dev
-echo %H%
+@echo off
 
+rem H is the destination game folder
+rem GAMEDIR is the name of the mod folder (usually the mod name)
+rem GAMEDATA is the name of the local GameData
+rem VERSIONFILE is the name of the version file, usually the same as GAMEDATA,
+rem    but not always
 
-copy KerbalSlingshotter\KerbalSlingshotter\bin\%1\KerbalSlingshotter.dll GameData\SlingShotter\Plugins
-xcopy /E /Y /i GameData\Slingshotter %H%\GameData\Slingshotter
+set H=R:\KSP_1.4.1_dev
+set GAMEDIR=SlingShotter
+set GAMEDATA="GameData\"
+set VERSIONFILE=%GAMEDIR%.version
 
+copy /Y "%1%2" "%GAMEDATA%\%GAMEDIR%\Plugins"
+copy /Y %VERSIONFILE% %GAMEDATA%\%GAMEDIR%
+
+xcopy /y /s /I %GAMEDATA%\%GAMEDIR% "%H%\GameData\%GAMEDIR%"
+
+pause
