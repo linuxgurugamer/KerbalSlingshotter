@@ -81,6 +81,8 @@ namespace KerbalSlingshotter
 
         void FixedUpdate()
         {
+            if (vessel.patchedConicSolver == null)
+                return;
             // Following needed to adjust values for slider, which can only use float
             // Only do it 1/sec to avoid any unnecessary cpu
             if (Planetarium.GetUniversalTime() > lastTime)

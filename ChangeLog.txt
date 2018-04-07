@@ -33,3 +33,6 @@
 	Added support for ToolbarController
 	Added settings page for Blizzy option
 	Added toggle for Blizzy on window
+
+1.1.6.1
+	Fixed nullrefs when patched conics haven't been researched yet
