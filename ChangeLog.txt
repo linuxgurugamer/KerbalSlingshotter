@@ -36,3 +36,6 @@
 
 1.1.6.1
 	Fixed nullrefs when patched conics haven't been researched yet
+
+1.1.6.2
+	Fixed nullrefs when no vessel is selected in the Tracking Station
