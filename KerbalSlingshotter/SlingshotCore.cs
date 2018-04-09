@@ -32,7 +32,6 @@ namespace KerbalSlingshotter
     {
         internal static Texture2D ShipIcon = null;
         internal static Texture2D BodyIcon = null;
-        private static Vessel vessel { get { return CurrentVessel(); } }
         protected Rect windowPos = new Rect(50, 100, 300, 400);
         double DesiredTime;
         TimeInfo desiredTimeInfo = new TimeInfo();
@@ -81,6 +80,7 @@ namespace KerbalSlingshotter
 
         void FixedUpdate()
         {
+            Vessel vessel = CurrentVessel();
             if (vessel == null || vessel.patchedConicSolver == null)
                 return;
             // Following needed to adjust values for slider, which can only use float
@@ -187,8 +187,9 @@ namespace KerbalSlingshotter
             scrollbar_stlye.margin = new RectOffset(1, 1, 1, 1);
             scrollbar_stlye.overflow = new RectOffset(1, 1, 1, 1);
 
-            
 
+
+            Vessel vessel = CurrentVessel();
             if (vessel.patchedConicSolver.maneuverNodes.Any())
             {
                 GUILayout.BeginHorizontal();
@@ -317,6 +318,7 @@ namespace KerbalSlingshotter
 
         void DrawNodeOrbits()
         {
+            Vessel vessel = CurrentVessel();
             Orbit o = vessel.orbit;
             foreach (ManeuverNode node in vessel.patchedConicSolver.maneuverNodes)
             {
@@ -343,6 +345,7 @@ namespace KerbalSlingshotter
 
         void DrawIconForAllOrbits()
         {
+            Vessel vessel = CurrentVessel();
             if (vessel != null)
             {
                 DrawPatchIcons(vessel.orbit); // Icons for all patches of actual vessel orbit
@@ -396,6 +399,7 @@ namespace KerbalSlingshotter
 
         void ToggleOn()
         {
+            Vessel vessel = CurrentVessel();
             if (vessel != null) WindowVisible = true;
         }
         void ToggleOff()
