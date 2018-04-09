@@ -15,10 +15,26 @@ using ToolbarControl_NS;
 namespace KerbalSlingshotter
 {
     [KSPAddon(KSPAddon.Startup.Flight,false)]
-    public class FlightSlingshot : SlingshotCore { }
+    public class FlightSlingshot : SlingshotCore {
+        protected override Vessel CurrentVessel() {
+            return FlightGlobals.ActiveVessel;
+        }
+    }
 
     [KSPAddon(KSPAddon.Startup.TrackingStation,false)]
-    public class TrackingSlingshot : SlingshotCore { }
+    public class TrackingSlingshot : SlingshotCore {
+        protected override Vessel CurrentVessel() {
+            SpaceTracking st = (SpaceTracking)FindObjectOfType(typeof(SpaceTracking));
+            if (st.MainCamera.target != null && st.MainCamera.target.type == MapObject.ObjectType.Vessel)
+            {
+                return st.MainCamera.target.vessel;
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }
 
     public class TimeInfo
     {
@@ -28,7 +44,7 @@ namespace KerbalSlingshotter
             minutes = 0,
             seconds = 0;
     }
-    public class SlingshotCore : MonoBehaviour
+    public abstract class SlingshotCore : MonoBehaviour
     {
         internal static Texture2D ShipIcon = null;
         internal static Texture2D BodyIcon = null;
@@ -45,6 +61,8 @@ namespace KerbalSlingshotter
         ToolbarControl toolbarControl;
         bool WindowVisible = false;
        // uint years = 0, days = 0, hours = 0, minutes = 0, seconds = 0;
+
+        protected abstract Vessel CurrentVessel();
 
         public void Start()
         {
@@ -127,29 +145,6 @@ namespace KerbalSlingshotter
                 lastVessel = vessel;
             }
         }
-
-        static Vessel CurrentVessel()
-        {
-            if (HighLogic.LoadedScene == GameScenes.FLIGHT && FlightGlobals.ActiveVessel != null)
-            {
-                return FlightGlobals.ActiveVessel;
-            }
-            else if (HighLogic.LoadedScene == GameScenes.TRACKSTATION)
-            {
-
-                SpaceTracking st = (SpaceTracking)FindObjectOfType(typeof(SpaceTracking));
-                if (st.MainCamera.target != null && st.MainCamera.target.type == MapObject.ObjectType.Vessel)
-                {
-                    return st.MainCamera.target.vessel;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            return null;
-        }
-
 
         TimeInfo setTimeSelection(double selection)
         {
