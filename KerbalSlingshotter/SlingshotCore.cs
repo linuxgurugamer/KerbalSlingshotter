@@ -23,8 +23,16 @@ namespace KerbalSlingshotter
 
     [KSPAddon(KSPAddon.Startup.TrackingStation,false)]
     public class TrackingSlingshot : SlingshotCore {
+        private SpaceTracking st;
+
+        new public void Start()
+        {
+            base.Start();
+
+            st = (SpaceTracking)FindObjectOfType(typeof(SpaceTracking));
+        }
+
         protected override Vessel CurrentVessel() {
-            SpaceTracking st = (SpaceTracking)FindObjectOfType(typeof(SpaceTracking));
             if (st.MainCamera.target != null && st.MainCamera.target.type == MapObject.ObjectType.Vessel)
             {
                 return st.MainCamera.target.vessel;
