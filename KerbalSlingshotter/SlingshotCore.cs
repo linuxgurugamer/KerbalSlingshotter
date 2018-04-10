@@ -15,10 +15,36 @@ using ToolbarControl_NS;
 namespace KerbalSlingshotter
 {
     [KSPAddon(KSPAddon.Startup.Flight,false)]
-    public class FlightSlingshot : SlingshotCore { }
+    public class FlightSlingshot : SlingshotCore {
+        protected override Vessel CurrentVessel() {
+            return FlightGlobals.ActiveVessel;
+        }
+    }
 
     [KSPAddon(KSPAddon.Startup.TrackingStation,false)]
-    public class TrackingSlingshot : SlingshotCore { }
+    public class TrackingSlingshot : SlingshotCore {
+        private SpaceTracking st;
+
+        new public void Start()
+        {
+            base.Start();
+
+            st = (SpaceTracking)FindObjectOfType(typeof(SpaceTracking));
+        }
+
+        protected override Vessel CurrentVessel() {
+            MapObject target = st?.MainCamera?.target;
+
+            if (target != null && target.type == MapObject.ObjectType.Vessel)
+            {
+                return target.vessel;
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }
 
     public class TimeInfo
     {
@@ -28,11 +54,10 @@ namespace KerbalSlingshotter
             minutes = 0,
             seconds = 0;
     }
-    public class SlingshotCore : MonoBehaviour
+    public abstract class SlingshotCore : MonoBehaviour
     {
         internal static Texture2D ShipIcon = null;
         internal static Texture2D BodyIcon = null;
-        private static Vessel vessel { get { return CurrentVessel(); } }
         protected Rect windowPos = new Rect(50, 100, 300, 400);
         double DesiredTime;
         TimeInfo desiredTimeInfo = new TimeInfo();
@@ -46,6 +71,8 @@ namespace KerbalSlingshotter
         ToolbarControl toolbarControl;
         bool WindowVisible = false;
        // uint years = 0, days = 0, hours = 0, minutes = 0, seconds = 0;
+
+        protected abstract Vessel CurrentVessel();
 
         public void Start()
         {
@@ -81,6 +108,7 @@ namespace KerbalSlingshotter
 
         void FixedUpdate()
         {
+            Vessel vessel = CurrentVessel();
             if (vessel == null || vessel.patchedConicSolver == null)
                 return;
             // Following needed to adjust values for slider, which can only use float
@@ -128,29 +156,6 @@ namespace KerbalSlingshotter
             }
         }
 
-        static Vessel CurrentVessel()
-        {
-            if (HighLogic.LoadedScene == GameScenes.FLIGHT && FlightGlobals.ActiveVessel != null)
-            {
-                return FlightGlobals.ActiveVessel;
-            }
-            else if (HighLogic.LoadedScene == GameScenes.TRACKSTATION)
-            {
-
-                SpaceTracking st = (SpaceTracking)FindObjectOfType(typeof(SpaceTracking));
-                if (st.MainCamera.target != null && st.MainCamera.target.type == MapObject.ObjectType.Vessel)
-                {
-                    return st.MainCamera.target.vessel;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            return null;
-        }
-
-
         TimeInfo setTimeSelection(double selection)
         {
             TimeInfo t = new TimeInfo();
@@ -187,8 +192,9 @@ namespace KerbalSlingshotter
             scrollbar_stlye.margin = new RectOffset(1, 1, 1, 1);
             scrollbar_stlye.overflow = new RectOffset(1, 1, 1, 1);
 
-            
 
+
+            Vessel vessel = CurrentVessel();
             if (vessel.patchedConicSolver.maneuverNodes.Any())
             {
                 GUILayout.BeginHorizontal();
@@ -317,6 +323,7 @@ namespace KerbalSlingshotter
 
         void DrawNodeOrbits()
         {
+            Vessel vessel = CurrentVessel();
             Orbit o = vessel.orbit;
             foreach (ManeuverNode node in vessel.patchedConicSolver.maneuverNodes)
             {
@@ -343,6 +350,7 @@ namespace KerbalSlingshotter
 
         void DrawIconForAllOrbits()
         {
+            Vessel vessel = CurrentVessel();
             if (vessel != null)
             {
                 DrawPatchIcons(vessel.orbit); // Icons for all patches of actual vessel orbit
@@ -396,6 +404,7 @@ namespace KerbalSlingshotter
 
         void ToggleOn()
         {
+            Vessel vessel = CurrentVessel();
             if (vessel != null) WindowVisible = true;
         }
         void ToggleOff()
