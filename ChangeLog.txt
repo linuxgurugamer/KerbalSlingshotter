@@ -39,3 +39,47 @@
 
 1.1.6.2
 	Fixed nullrefs when no vessel is selected in the Tracking Station
+
+1.1.6.3
+	Fixed loading the body image (green circles for planet/moon positions)
+	Thanks to forum user @Wyzard256 for the following:
+		Tracking station performance fix
+		Simplify code in TrackingSlingshot.CurrentVessel() a little
+
+		Cache the SpaceTracking lookup, since it's slow
+
+		Unity's FindObjectOfType method is slow, and calling it every UI frame
+		(from WindowGUI) has a major performance impact.  Since it's being used
+		to look up an object that's always the same for the lifetime of the
+		scene, we can do the lookup just once in Start() and save it in a field.
+
+		This resolves the laggy game UI when the Slingshotter window is open.
+
+		Make SlingshotCore.CurrentVessel() an abstract method
+
+		Getting the current vessel is done differently depending on whether the
+		player is in the flight scene or tracking station, and CurrentVessel()
+		was a static method that would check HighLogic.LoadedScene to decide
+		what to do.  But there are already separate derived classes for the two
+		scenes, so the same thing can be accomplished with an abstract method
+		that's implemented differently in those two classes.  This avoids the
+		need to check HighLogic.LoadedScene when the calling object already
+		knows what scene it's in.
+
+		Remove "vessel" property to avoid repeated calls to CurrentVessel()
+
+		SlingshotCore.FixedUpdate refers to "vessel" in a bunch of places, and
+		that was actually a property whose getter was a call to CurrentVessel().
+		That's a somewhat expensive operation, especially in the tracking
+		station (where it involves a call to FindObjectOfType(), which Unity
+		documents as "very slow" and not to be used every frame), so the
+		multiple "vessel" accesses made the UI very laggy when a vessel was
+		selected in the tracking station.
+
+		To avoid calling CurrentVessel() so often, I've removed the "vessel"
+		property and replaced it with a local variable in each method that needs
+		it, initialized with a single up-front call to CurrentVessel().  This
+		still isn't ideal (since it still calls FindObjectOfType() at least once
+		per FixedUpdate), but it's a simple change that provides a significant
+		performance improvement when a vessel is selected in the tracking
+		station.

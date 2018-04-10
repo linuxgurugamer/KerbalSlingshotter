@@ -82,7 +82,10 @@ namespace KerbalSlingshotter
             if (ShipIcon == null)
                 ShipIcon = GameDatabase.Instance.GetTexture("Squad/PartList/SimpleIcons/RDicon_commandmodules", false);
             if (BodyIcon == null)
-                BodyIcon = GameDatabase.Instance.GetTexture("SlingShotter/Textures/body", false);
+            {
+                BodyIcon = new Texture2D(2, 2, TextureFormat.ARGB32, false);
+                ToolbarControl.LoadImageFromFile(ref BodyIcon, KSPUtil.ApplicationRootPath + "GameData/" + "SlingShotter/PluginData/Textures/body");
+            }
         }
 
         private void OnGUI()
@@ -195,6 +198,8 @@ namespace KerbalSlingshotter
 
 
             Vessel vessel = CurrentVessel();
+            if (vessel == null)
+                return;
             if (vessel.patchedConicSolver.maneuverNodes.Any())
             {
                 GUILayout.BeginHorizontal();
@@ -324,6 +329,8 @@ namespace KerbalSlingshotter
         void DrawNodeOrbits()
         {
             Vessel vessel = CurrentVessel();
+            if (vessel == null)
+                return;
             Orbit o = vessel.orbit;
             foreach (ManeuverNode node in vessel.patchedConicSolver.maneuverNodes)
             {
@@ -374,21 +381,6 @@ namespace KerbalSlingshotter
 
         private void CreateButtonIcon()
         {
-#if false
-            button = ApplicationLauncher.Instance.AddModApplication(
-                () =>
-                {
-                    if (vessel != null) WindowVisible = true;
-                },
-                () => WindowVisible = false,
-                null,
-                null,
-                null,
-                null,
-                ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.MAPVIEW | ApplicationLauncher.AppScenes.TRACKSTATION,
-                GameDatabase.Instance.GetTexture("SlingShotter/Textures/icon", false)
-                );
-#endif
             toolbarControl = gameObject.AddComponent<ToolbarControl>();
             toolbarControl.AddToAllToolbars(ToggleOn, ToggleOff,
                 ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.MAPVIEW | ApplicationLauncher.AppScenes.TRACKSTATION,
