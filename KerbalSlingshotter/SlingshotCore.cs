@@ -33,9 +33,11 @@ namespace KerbalSlingshotter
         }
 
         protected override Vessel CurrentVessel() {
-            if (st.MainCamera.target != null && st.MainCamera.target.type == MapObject.ObjectType.Vessel)
+            MapObject target = st?.MainCamera?.target;
+
+            if (target != null && target.type == MapObject.ObjectType.Vessel)
             {
-                return st.MainCamera.target.vessel;
+                return target.vessel;
             }
             else
             {
