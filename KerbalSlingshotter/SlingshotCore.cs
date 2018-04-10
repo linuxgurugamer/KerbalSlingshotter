@@ -374,7 +374,8 @@ namespace KerbalSlingshotter
             styleWarpToButton.normal.background = icon;
 
             Vector3d screenPosNode = PlanetariumCamera.Camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(position));
-
+            if (screenPosNode.z < 0)
+                return;
             Rect rectNodeButton = new Rect((Int32)screenPosNode.x-16, (Int32)(Screen.height - screenPosNode.y)-16, 32, 32);
             GUI.Button(rectNodeButton, "", styleWarpToButton);
         }
