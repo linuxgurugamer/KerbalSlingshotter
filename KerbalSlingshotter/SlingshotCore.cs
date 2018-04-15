@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-//using System.Threading.Tasks;
-
 using UnityEngine;
-using Debug = UnityEngine.Debug;
-using KSP.IO;
 using KSP.UI.Screens;
 
 using ClickThroughFix;
@@ -56,6 +50,9 @@ namespace KerbalSlingshotter
     }
     public abstract class SlingshotCore : MonoBehaviour
     {
+        internal const string MODID = "Slingshotter_NS";
+        internal const string MODNAME = "SlingShotter";
+
         internal static Texture2D ShipIcon = null;
         internal static Texture2D BodyIcon = null;
         protected Rect windowPos = new Rect(50, 100, 300, 400);
@@ -90,13 +87,10 @@ namespace KerbalSlingshotter
 
         private void OnGUI()
         {
-            if (toolbarControl != null)
-                toolbarControl.UseBlizzy(HighLogic.CurrentGame.Parameters.CustomParams<Slingshotter>().useBlizzy);
-
             if (WindowVisible)
             {
                 GUI.skin = HighLogic.Skin;
-                windowPos = ClickThruBlocker.GUILayoutWindow(1, windowPos, WindowGUI, "SlingShotter | Set Time", GUILayout.MinWidth(300));
+                windowPos = ClickThruBlocker.GUILayoutWindow(4357891, windowPos, WindowGUI, "SlingShotter | Set Time", GUILayout.MinWidth(300));
                 if (HighLogic.LoadedScene == GameScenes.TRACKSTATION || HighLogic.LoadedScene == GameScenes.FLIGHT)
                     DrawIconForAllOrbits();
             }
@@ -104,7 +98,6 @@ namespace KerbalSlingshotter
 
         void OnDestroy()
         {
-            //ApplicationLauncher.Instance.RemoveModApplication(button);
             toolbarControl.OnDestroy();
             Destroy(toolbarControl);
         }
@@ -297,7 +290,6 @@ namespace KerbalSlingshotter
                 timeSel = (float)vessel.patchedConicSolver.maneuverNodes.Last().UT / div;
             }
 
-            HighLogic.CurrentGame.Parameters.CustomParams<Slingshotter>().useBlizzy = GUILayout.Toggle(HighLogic.CurrentGame.Parameters.CustomParams<Slingshotter>().useBlizzy, "Use Blizzy toolbar, if available");
             GUILayout.EndVertical();
 
             DesiredTime = UT + desiredTimeInfo.years * DaysPerYear * HoursPerDay * 3600.0 +
@@ -385,14 +377,12 @@ namespace KerbalSlingshotter
             toolbarControl = gameObject.AddComponent<ToolbarControl>();
             toolbarControl.AddToAllToolbars(ToggleOn, ToggleOff,
                 ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.MAPVIEW | ApplicationLauncher.AppScenes.TRACKSTATION,
-                "Slingshotter_NS",
+                MODID,
                 "slingShotterButton",
                 "SlingShotter/PluginData/Textures/icon_38",
                 "SlingShotter/PluginData/Textures/icon_24",
-                "SlingShotter"
+                MODNAME
             );
-            toolbarControl.UseBlizzy(HighLogic.CurrentGame.Parameters.CustomParams<Slingshotter>().useBlizzy);
-
         }
 
         void ToggleOn()

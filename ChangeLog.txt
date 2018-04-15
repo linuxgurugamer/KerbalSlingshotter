@@ -84,6 +84,11 @@
 		performance improvement when a vessel is selected in the tracking
 		station.
 
-	1.1.6.4
+1.1.6.4
 		Thanks to @Wyzard for this:
 			Fixed mysterious floating planets, which acted like UFOs when you zoomed out
+
+1.1.6.5
+	Updated toolbar code to  use new toolbar controller functions
+	Removed settings page since it was only there for the Blizzy option
+	Changed windowid from 1 to a random number
