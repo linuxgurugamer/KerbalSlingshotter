@@ -273,6 +273,24 @@ namespace KerbalSlingshotter
                     endTimeInfo = null;
             }
             GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            ITargetable curTarget = FlightGlobals.fetch.VesselTarget; 
+            if(curTarget != null)
+            {
+                Vector3d target_PosAtUT = FlightGlobals.fetch.VesselTarget.GetOrbit().getPositionAtUT(DesiredTime);
+
+                Vector3d vessel_posAtUT = vessel.orbit.getPositionAtUT(DesiredTime);
+                if (vessel.patchedConicSolver.maneuverNodes.Any()) {
+                    vessel_posAtUT = vessel.patchedConicSolver.maneuverNodes.Last().nextPatch.getPositionAtUT(DesiredTime);
+                }
+                long targetDistAtUT = (long)Vector3d.Distance(target_PosAtUT, vessel_posAtUT)/1000; //cast to long to cut off decimal places
+                GUILayout.Label("Target dist. at UT (km)", GUILayout.ExpandWidth(false));
+                GUILayout.TextField(targetDistAtUT.ToString(), GUILayout.Width(100));
+            }
+            GUILayout.EndHorizontal();
+
+
             if (GUILayout.Button("Next Node") && vessel.patchedConicSolver.maneuverNodes.Any())
             {
                 startTimeNow = false;
