@@ -274,6 +274,11 @@ namespace KerbalSlingshotter
             }
             GUILayout.EndHorizontal();
 
+            //
+            // Following section contributed by Github user @alismatales
+            //
+            // Added display for distance between target and vessel at given time
+            //
             GUILayout.BeginHorizontal();
             ITargetable curTarget = FlightGlobals.fetch.VesselTarget; 
             if(curTarget != null)
@@ -290,6 +295,9 @@ namespace KerbalSlingshotter
             }
             GUILayout.EndHorizontal();
 
+            //
+            // End of contribution
+            //
 
             if (GUILayout.Button("Next Node") && vessel.patchedConicSolver.maneuverNodes.Any())
             {
