@@ -98,4 +98,7 @@
 
 1.1.6.7
 	Contributed by github user @alismatales
-		Added display for distance between target and vessel at given tim
+		Added display for distance between target and vessel at given time
+
+1.1.6.8
+	Version bump for 1.5 rebuild
