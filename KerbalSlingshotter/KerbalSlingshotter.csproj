@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>KerbalSlingshotter</RootNamespace>
     <AssemblyName>KerbalSlingshotter</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -77,13 +78,21 @@
     <PostBuildEvent>
 start /D D:\Users\jbb\github\KerbalSlingshotter /WAIT deploy.bat  $(TargetDir) $(TargetFileName)
 
+
+
 if $(ConfigurationName) == Release (
+
+
 	start /D D:\Users\jbb\github\KerbalSlingshotter /WAIT buildRelease.bat $(TargetDir) $(TargetFileName)
+
+
 )</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>
 set textTemplatingPath="%25ProgramFiles(x86)%25\Microsoft Visual Studio\2017\Community\Common7\IDE \texttransform.exe"
+
+
 
 %25textTemplatingPath%25 "$(ProjectDir)AssemblyVersion.tt"</PreBuildEvent>
   </PropertyGroup>
