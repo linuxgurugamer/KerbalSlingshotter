@@ -405,8 +405,8 @@ namespace KerbalSlingshotter
                 ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.MAPVIEW | ApplicationLauncher.AppScenes.TRACKSTATION,
                 MODID,
                 "slingShotterButton",
-                "SlingShotter/PluginData/Textures/icon_38",
-                "SlingShotter/PluginData/Textures/icon_24",
+                "SlingShotter/Textures/icon_38",
+                "SlingShotter/Textures/icon_24",
                 MODNAME
             );
         }

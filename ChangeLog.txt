@@ -102,3 +102,9 @@
 
 1.1.6.8
 	Version bump for 1.5 rebuild
+
+1.1.7
+	Version bump for 1.7.2
+	Updated AssemblyVersion.tt
+	Deleted settings.cs
+	Moved Textures out of the PluginData directory
