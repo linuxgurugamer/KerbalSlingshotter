@@ -108,3 +108,6 @@
 	Updated AssemblyVersion.tt
 	Deleted settings.cs
 	Moved Textures out of the PluginData directory
+	
+1.1.7.1
+        Fixed path for planet textures
