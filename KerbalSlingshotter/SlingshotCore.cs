@@ -81,7 +81,7 @@ namespace KerbalSlingshotter
             if (BodyIcon == null)
             {
                 BodyIcon = new Texture2D(2, 2, TextureFormat.ARGB32, false);
-                ToolbarControl.LoadImageFromFile(ref BodyIcon, KSPUtil.ApplicationRootPath + "GameData/" + "SlingShotter/PluginData/Textures/body");
+                ToolbarControl.LoadImageFromFile(ref BodyIcon, KSPUtil.ApplicationRootPath + "GameData/" + "SlingShotter/Textures/body");
             }
         }
 
