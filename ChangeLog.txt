@@ -1,3 +1,5 @@
+ChangeLog
+
 1.0.1	updated by @Hacki for 1.2.2
 
 1.1		Adoption by Linuxgurugmaer
@@ -111,3 +113,7 @@
 	
 1.1.7.1
         Fixed path for planet textures
+
+1.1.8
+	Added InstallChecker
+	Updated for KSP 1.8
