@@ -111,9 +111,12 @@ ChangeLog
 	Deleted settings.cs
 	Moved Textures out of the PluginData directory
 	
-1.1.7.1
-        Fixed path for planet textures
+1.1.7.2
+	Moved Textures directory back into the PluginData
+	Fixed path for textures in code
 
 1.1.8
 	Added InstallChecker
 	Updated for KSP 1.8
+    Fixed path for planet textures
+

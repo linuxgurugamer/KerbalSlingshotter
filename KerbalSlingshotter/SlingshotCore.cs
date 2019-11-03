@@ -81,7 +81,7 @@ namespace KerbalSlingshotter
             if (BodyIcon == null)
             {
                 BodyIcon = new Texture2D(2, 2, TextureFormat.ARGB32, false);
-                ToolbarControl.LoadImageFromFile(ref BodyIcon, KSPUtil.ApplicationRootPath + "GameData/" + "SlingShotter/Textures/body");
+                ToolbarControl.LoadImageFromFile(ref BodyIcon, KSPUtil.ApplicationRootPath + "GameData/" + "SlingShotter/PluginData/Textures/body");
             }
         }
 
@@ -405,8 +405,8 @@ namespace KerbalSlingshotter
                 ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.MAPVIEW | ApplicationLauncher.AppScenes.TRACKSTATION,
                 MODID,
                 "slingShotterButton",
-                "SlingShotter/Textures/icon_38",
-                "SlingShotter/Textures/icon_24",
+                "SlingShotter/PluginData/Textures/icon_38",
+                "SlingShotter/PluginData/Textures/icon_24",
                 MODNAME
             );
         }
