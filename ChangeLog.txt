@@ -120,3 +120,6 @@ ChangeLog
 	Updated for KSP 1.8
     Fixed path for planet textures
 
+1.1.8.1
+	Added AssemblyFileVersion
+	Updated version file for 1.12

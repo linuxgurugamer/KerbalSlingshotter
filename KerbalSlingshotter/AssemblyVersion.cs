@@ -11,8 +11,4 @@
  using System.Reflection;
 
  [assembly: AssemblyVersion("1.1.8.0")]
-  public partial class FMRS_Version_Info
-  {
-   public const string beta_version = "0";
-   public const string version_number = "1.1.8.0";
-  }
+ [assembly: AssemblyFileVersion("1.1.8.0")]
